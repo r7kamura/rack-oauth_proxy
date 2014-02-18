@@ -1,7 +1,13 @@
 require "rack/oauth_proxy/version"
 
 module Rack
-  module OauthProxy
-    # Your code goes here...
+  class OauthProxy
+    def initialize(app)
+      @app = app
+    end
+
+    def call(env)
+      @app.call(env)
+    end
   end
 end
