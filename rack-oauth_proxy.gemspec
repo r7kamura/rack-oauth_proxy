@@ -1,16 +1,15 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'rack/oauth_proxy/version'
+require "rack/oauth_proxy/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "rack-oauth_proxy"
   spec.version       = Rack::OauthProxy::VERSION
   spec.authors       = ["Ryo Nakamura"]
   spec.email         = ["r7kamura@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = "Delegates OAuth authentication to other authentication server"
+  spec.homepage      = "https://github.com/r7kamura/rack-oauth_proxy"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
