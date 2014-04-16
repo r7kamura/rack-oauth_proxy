@@ -45,6 +45,7 @@ module Rack
         client = Net::HTTP.new(uri.host, uri.port)
         client.read_timeout = READ_TIMEOUT
         client.open_timeout = OPEN_TIMEOUT
+        client.use_ssl = true if uri.scheme == 'https'
         client
       end
 
