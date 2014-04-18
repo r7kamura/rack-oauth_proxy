@@ -13,8 +13,8 @@ module Rack
 
         def has_any_valid_credentials?
           authorization.present? ||
-            rack_request.params[:access_token].present? ||
-            rack_request.params[:bearer_token].present?
+            rack_request.params["access_token"].present? ||
+            rack_request.params["bearer_token"].present?
         end
 
         def rack_request
