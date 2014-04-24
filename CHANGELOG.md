@@ -1,3 +1,6 @@
+## 0.2.1
+* Add `:propagated_params` option
+
 ## 0.2.0
 * `env["rack-oauth_proxy.response"]` is a Faraday::Response
 
