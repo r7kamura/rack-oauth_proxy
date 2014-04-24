@@ -4,6 +4,7 @@ SimpleCov.start
 if ENV["CI"]
   require "codeclimate-test-reporter"
   CodeClimate::TestReporter.start
+  WebMock.allow_net_connect!
 end
 
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
