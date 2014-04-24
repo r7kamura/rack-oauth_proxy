@@ -1,3 +1,6 @@
+## 0.2.0
+* `env["rack-oauth_proxy.response"]` is a Faraday::Response
+
 ## 0.1.0
 * Add `:propagated_header_fields` option
 * Use fadaday
