@@ -1,15 +1,19 @@
 require "spec_helper"
-require "securerandom"
-require "stringio"
 
-describe Rack::OauthProxy::Client do
+describe Rack::OauthProxy do
   before do
     stub_request(:get, url).to_return(status: 401, body: {}.to_json)
     stub_request(:get, url).with(headers: { "Authorization" => "Bearer #{token}" }).to_return(response)
   end
 
-  let(:client) do
-    described_class.new(options)
+  let(:application) do
+    opts = options
+    Rack::Builder.app do
+      use Rack::OauthProxy, opts
+      run ->(env) do
+        env
+      end
+    end
   end
 
   let(:options) do
@@ -54,10 +58,10 @@ describe Rack::OauthProxy::Client do
   end
 
   let(:result) do
-    client.fetch(env)
+    application.call(env)["rack-oauth_proxy.response"]
   end
 
-  context "#fetch" do
+  describe "#call" do
     context "when authentication succeeded" do
       it "returns valid access token" do
         result.should be_a Faraday::Response
