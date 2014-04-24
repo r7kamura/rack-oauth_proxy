@@ -1,3 +1,7 @@
+## 0.1.0
+* Add `:propagated_header_fields` option
+* Use fadaday
+
 ## 0.0.3
 * Fix :bug: of `?access_token=...` handling
 
