@@ -21,9 +21,9 @@ class BlogsController < ApplicationController
     raise UnauthorizedError unless has_authorization?
   end
 
-  # env["rack-oauth_proxy.resopnse"] is a Faraday::Response object.
+  # env["rack-oauth_proxy.response"] is a Faraday::Response object.
   def has_authorization?
-    env["rack-oauth_proxy.resopnse"].status == 200
+    env["rack-oauth_proxy.response"].status == 200
   end
 end
 ```
