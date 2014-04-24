@@ -21,10 +21,25 @@ describe Rack::OauthProxy::Client do
     SecureRandom.hex(32)
   end
 
+  let(:response) do
+    {
+      status: status,
+      body: body,
+    }
+  end
+
+  let(:status) do
+    200
+  end
+
+  let(:body) do
+    {}.to_json
+  end
+
   context "#fetch" do
     context "when authentication succeeded" do
       before do
-        stub_request(:get, url).to_return(status: 200, body: {}.to_json)
+        stub_request(:get, url).to_return(response)
       end
 
       it "returns valid access token" do
