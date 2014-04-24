@@ -1,6 +1,4 @@
 require "active_support/core_ext/hash/slice"
-require "active_support/core_ext/object/blank"
-require "active_support/core_ext/object/to_query"
 require "json"
 require "rack"
 
@@ -10,12 +8,6 @@ module Rack
       class Request
         def initialize(env)
           @env = env
-        end
-
-        def has_any_valid_credentials?
-          authorization.present? ||
-            rack_request.params["access_token"].present? ||
-            rack_request.params["bearer_token"].present?
         end
 
         def to_header

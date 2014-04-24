@@ -47,16 +47,6 @@ describe Rack::OauthProxy::Client do
       end
     end
 
-    context "without no credentials in request" do
-      before do
-        env.delete("HTTP_AUTHORIZATION")
-      end
-
-      it "returns invalid access token" do
-        client.fetch(env).should be_a Rack::OauthProxy::AccessTokens::Invalid
-      end
-    end
-
     context "when authentication failed" do
       before do
         stub_request(:get, url).to_return(status: 401, body: {}.to_json)

@@ -12,11 +12,8 @@ module Rack
 
       def fetch(env)
         request = Request.new(env)
-        if request.has_any_valid_credentials?
-          response = connection.get(url, request.to_params, request.to_header)
-          return AccessTokens::Valid.new(response.body)
-        end
-        raise
+        response = connection.get(url, request.to_params, request.to_header)
+        AccessTokens::Valid.new(response.body)
       rescue
         AccessTokens::Invalid.new
       end
