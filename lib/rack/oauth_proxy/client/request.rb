@@ -14,7 +14,6 @@ module Rack
           {
             "Authorization" => authorization,
             "Resource-Owner-Id" => resource_owner_id,
-            "Scopes" => scopes,
           }.reject {|key, value| value.nil? }
         end
 
@@ -32,10 +31,6 @@ module Rack
 
         def resource_owner_id
           @env["HTTP_RESOURCE_OWNER_ID"]
-        end
-
-        def scopes
-          @env["HTTP_SCOPES"]
         end
       end
     end
