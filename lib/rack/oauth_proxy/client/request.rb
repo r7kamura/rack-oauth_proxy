@@ -6,31 +6,37 @@ module Rack
   class OauthProxy
     class Client
       class Request
-        def initialize(env)
+        DEFAULT_PROPAGATED_HEADER_FIELDS = ["Authorization"]
+
+        attr_reader :env, :options
+
+        def initialize(env, options = {})
           @env = env
+          @options = options
         end
 
-        def to_header
-          {
-            "Authorization" => authorization,
-            "Resource-Owner-Id" => resource_owner_id,
-          }.reject {|key, value| value.nil? }
+        def header
+          header_with_nil_value.reject {|key, value| value.nil? }
         end
+
+        def header_with_nil_value
+          propagated_header_fields.inject({}) do |result, field|
+            result.merge(field => env["HTTP_" + field.gsub("-", "_").upcase])
+          end
+        end
+
+        def params
+          rack_request.params.slice("access_token", "bearer_token")
+        end
+
+        private
 
         def rack_request
           @rack_request ||= Rack::Request.new(@env)
         end
 
-        def to_params
-          rack_request.params.slice("access_token", "bearer_token")
-        end
-
-        def authorization
-          @env["HTTP_AUTHORIZATION"]
-        end
-
-        def resource_owner_id
-          @env["HTTP_RESOURCE_OWNER_ID"]
+        def propagated_header_fields
+          options[:propagated_header_fields] || DEFAULT_PROPAGATED_HEADER_FIELDS
         end
       end
     end

@@ -11,8 +11,8 @@ module Rack
       end
 
       def fetch(env)
-        request = Request.new(env)
-        response = connection.get(url, request.to_params, request.to_header)
+        request = Request.new(env, options)
+        response = connection.get(url, request.params, request.header)
         AccessTokens::Valid.new(response.body)
       rescue
         AccessTokens::Invalid.new
