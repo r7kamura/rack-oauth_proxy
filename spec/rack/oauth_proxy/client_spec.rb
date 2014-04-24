@@ -44,13 +44,25 @@ describe Rack::OauthProxy::Client do
   end
 
   let(:body) do
-    {}.to_json
+    attributes.to_json
+  end
+
+  let(:attributes) do
+    {
+      "token" => token,
+    }
+  end
+
+  let(:result) do
+    client.fetch(env)
   end
 
   context "#fetch" do
     context "when authentication succeeded" do
       it "returns valid access token" do
-        client.fetch(env).should be_a Rack::OauthProxy::AccessTokens::Valid
+        result.should be_a Faraday::Response
+        result.status.should == 200
+        result.body.should == attributes
         a_request(:get, url).with(headers: { "Authorization" => "Bearer #{token}" }).should have_been_made
       end
     end
@@ -61,7 +73,8 @@ describe Rack::OauthProxy::Client do
       end
 
       it "returns invalid access token" do
-        client.fetch(env).should be_a Rack::OauthProxy::AccessTokens::Invalid
+        result.should be_a Faraday::Response
+        result.status.should == 401
         a_request(:get, url).should have_been_made
       end
     end
@@ -72,7 +85,8 @@ describe Rack::OauthProxy::Client do
       end
 
       it "propagates specified fields" do
-        client.fetch(env).should be_a Rack::OauthProxy::AccessTokens::Invalid
+        result.should be_a Faraday::Response
+        result.status.should == 401
         a_request(:get, url).with(headers: { "DUMMY" => "dummy" }).should have_been_made
       end
     end

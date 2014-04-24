@@ -12,10 +12,7 @@ module Rack
 
       def fetch(env)
         request = Request.new(env, options)
-        response = connection.get(url, request.params, request.header)
-        AccessTokens::Valid.new(response.body)
-      rescue
-        AccessTokens::Invalid.new
+        connection.get(url, request.params, request.header)
       end
 
       private
@@ -23,7 +20,6 @@ module Rack
       def connection
         @connection ||= Faraday.new(headers: header) do |connection|
           connection.adapter :net_http
-          connection.response :raise_error
           connection.response :json
         end
       end
