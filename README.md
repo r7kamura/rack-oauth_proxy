@@ -6,7 +6,24 @@ Delegates OAuth authentication to other authentication server.
 For Rails example:
 
 ```ruby
-class ApplicationController < ActionController::Base
+class BlogsController < ApplicationController
   use Rack::OauthProxy, url: "http://auth.example.com/oauth/token"
+
+  before_action :require_authorization
+
+  def show
+    ...
+  end
+
+  private
+
+  def require_authorization
+    raise UnauthorizedError unless has_authorization?
+  end
+
+  # env["rack-oauth_proxy.resopnse"] is a Faraday::Response object.
+  def has_authorization?
+    env["rack-oauth_proxy.resopnse"].status == 200
+  end
 end
 ```
