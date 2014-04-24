@@ -28,8 +28,13 @@ describe Rack::OauthProxy do
     {
       "HTTP_AUTHORIZATION" => "Bearer #{token}",
       "HTTP_DUMMY" => "dummy",
+      "QUERY_STRING" => query_string,
       "rack.input" => StringIO.new,
     }
+  end
+
+  let(:query_string) do
+    ""
   end
 
   let(:token) do
@@ -92,6 +97,25 @@ describe Rack::OauthProxy do
         result.should be_a Faraday::Response
         result.status.should == 401
         a_request(:get, url).with(headers: { "DUMMY" => "dummy" }).should have_been_made
+      end
+    end
+
+    context "with propagated params option" do
+      before do
+        options[:propagated_params] = ["access_token"]
+      end
+
+      let(:url) do
+        "http://example.com/oauth/token?access_token=#{token}"
+      end
+
+      let(:query_string) do
+        "access_token=#{token}"
+      end
+
+      it "propagates specified params" do
+        result.should be_a Faraday::Response
+        a_request(:get, url).should have_been_made
       end
     end
   end

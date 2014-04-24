@@ -8,6 +8,8 @@ module Rack
       class Request
         DEFAULT_PROPAGATED_HEADER_FIELDS = ["Authorization"]
 
+        DEFAULT_PROPAGATED_PARAMS = ["access_token", "bearer_token"]
+
         attr_reader :env, :options
 
         def initialize(env, options = {})
@@ -26,7 +28,7 @@ module Rack
         end
 
         def params
-          rack_request.params.slice("access_token", "bearer_token")
+          rack_request.params.slice(*propagated_params)
         end
 
         private
@@ -37,6 +39,10 @@ module Rack
 
         def propagated_header_fields
           options[:propagated_header_fields] || DEFAULT_PROPAGATED_HEADER_FIELDS
+        end
+
+        def propagated_params
+          options[:propagated_params] || DEFAULT_PROPAGATED_PARAMS
         end
       end
     end
