@@ -1,10 +1,10 @@
-require "net/http"
+require "faraday"
+require "faraday_middleware"
 
 module Rack
   class OauthProxy
     class Client
-      READ_TIMEOUT = 1
-      OPEN_TIMEOUT = 1
+      attr_reader :options
 
       def initialize(options = {})
         @options = options
@@ -13,48 +13,36 @@ module Rack
       def fetch(env)
         request = Request.new(env)
         if request.has_any_valid_credentials?
-          path = "#{uri.path}"
-          path << "?#{request.to_query}" if request.to_query.present?
-          header = {
-            "Authorization" => request.authorization,
-            "Host" => host,
-            "Resource-Owner-Id" => request.resource_owner_id,
-            "Scopes" => request.scopes,
-          }.reject {|key, value| value.nil? }
-          raw_response = http_client.get(path, header)
-          response = Response.new(raw_response)
-          if response.valid_as_access_token?
-            AccessTokens::Valid.new(response.to_hash)
-          else
-            AccessTokens::Invalid.new
-          end
-        else
-          AccessTokens::Invalid.new
+          response = connection.get(url, request.to_params, request.to_header)
+          return AccessTokens::Valid.new(response.body)
         end
-      rescue Timeout::Error
+        raise
+      rescue
         AccessTokens::Invalid.new
       end
 
       private
 
-      def uri
-        @uri ||= URI.parse(url)
-      end
-
-      def http_client
-        client = Net::HTTP.new(uri.host, uri.port)
-        client.read_timeout = READ_TIMEOUT
-        client.open_timeout = OPEN_TIMEOUT
-        client.use_ssl = true if uri.scheme == 'https'
-        client
+      def connection
+        @connection ||= Faraday.new(headers: header) do |connection|
+          connection.adapter :net_http
+          connection.response :raise_error
+          connection.response :json
+        end
       end
 
       def url
-        @options[:url] or raise NoUrlError
+        options[:url] or raise NoUrlError
       end
 
       def host
-        @options[:host]
+        options[:host]
+      end
+
+      def header
+        {
+          "Host" => host,
+        }.reject {|key, value| value.nil? }
       end
 
       class NoUrlError < StandardError

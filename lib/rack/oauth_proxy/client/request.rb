@@ -1,6 +1,7 @@
 require "active_support/core_ext/hash/slice"
 require "active_support/core_ext/object/blank"
 require "active_support/core_ext/object/to_query"
+require "json"
 require "rack"
 
 module Rack
@@ -17,12 +18,20 @@ module Rack
             rack_request.params["bearer_token"].present?
         end
 
+        def to_header
+          {
+            "Authorization" => authorization,
+            "Resource-Owner-Id" => resource_owner_id,
+            "Scopes" => scopes,
+          }.reject {|key, value| value.nil? }
+        end
+
         def rack_request
           @rack_request ||= Rack::Request.new(@env)
         end
 
-        def to_query
-          rack_request.params.slice("access_token", "bearer_token").to_query
+        def to_params
+          rack_request.params.slice("access_token", "bearer_token")
         end
 
         def authorization

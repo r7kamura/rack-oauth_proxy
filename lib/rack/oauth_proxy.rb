@@ -3,7 +3,6 @@ require "rack/oauth_proxy/access_tokens/invalid"
 require "rack/oauth_proxy/access_tokens/valid"
 require "rack/oauth_proxy/client"
 require "rack/oauth_proxy/client/request"
-require "rack/oauth_proxy/client/response"
 require "rack/oauth_proxy/version"
 
 module Rack
